@@ -1,5 +1,3 @@
-# RL-Engine
-
 <p align="center">
   <img src="./docs/assets/rl-engine-log-display.png" width="220" alt="RL-Engine Logo">
 </p>
@@ -13,16 +11,15 @@
 <p align="center">
   <a href="https://opensource.org/licenses/Apache-2.0"><img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License"></a>
   <a href="https://github.com/Flink-ddd/RL-Engine"><img src="https://img.shields.io/badge/Hardware-NVIDIA%20CUDA%20%7C%20AMD%20ROCm-orange" alt="Hardware"></a>
-  <a href="https://github.com/Flink-ddd"><img src="https://img.shields.io/badge/GitHub-Pull%20Shark%20x16-blueviolet" alt="Pull Shark"></a>
 </p>
 
-**RL-Engine** is a high-performance, memory-efficient infrastructure for Reinforcement Learning (RL) post-training. It eliminates the memory and latency bottlenecks in Large Language Model (LLM) alignment, providing specialized kernels for algorithms like **GRPO**, **PPO**, and **DPO**.
+**RL-Engine** is a high-performance, memory-efficient infrastructure for Reinforcement Learning (RL) post-training. It eliminates the memory and latency bottlenecks in Large Language Model (LLM) alignment, This project targets AI infrastructure engineers, algorithm researchers, and enterprise-level large model alignment scenarios, providing specialized kernels for algorithms like **GRPO**, **PPO**, and **DPO**.
 
 ---
 
 ## Performance Benchmarks: Breaking the Memory Wall
 
-RL-Engine is designed to solve the $O(G \cdot L \cdot V)$ memory explosion in DeepSeek-style **GRPO** training. Example as follows
+RL-Engine is designed to solve the $O(G \cdot L \cdot V)$ memory explosion in DeepSeek-style **GRPO** training. A typical scenario is as follows:
 
 ### 1. Logprob Computation (Training Stability)
 By implementing **Pre-allocated Chunking**, RL-Engine maintains constant additional VRAM overhead regardless of the group size ($G$).
@@ -69,7 +66,7 @@ RL-Engine sits between high-level alignment libraries and low-level GPU kernels,
 ### Installation
 ```bash
 # Clone the repository
-git clone [https://github.com/Flink-ddd/RL-Engine.git](https://github.com/Flink-ddd/RL-Engine.git)
+git clone https://github.com/Flink-ddd/RL-Engine.git
 cd RL-Engine
 
 # Install core dependencies (CUDA 12.4+ recommended)
