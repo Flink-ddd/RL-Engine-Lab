@@ -89,26 +89,37 @@ class SamplerBackend(nn.Module):
         probs = torch.softmax(logits, dim=-1)
         return torch.multinomial(probs, num_samples=1).squeeze(-1)
 
+
     @torch.inference_mode()
     def compute_logp(self, logits, token_ids):
         """
-        Unified Logprob interface.
-        Core advantage: avoids generating intermediate [Batch, Seq, Vocab] float32 matrices.
+        Optimized Logprob interface: Supports large vocabularies and large group sizes.
+        Memory optimizations have been implemented for PyTorch 2.8.
         """
-        logits = logits.contiguous()
-
         if self.backend == constants.BackendLib.FLASHINFER.value:
-            from flashinfer.sampling import softmax
-            probs = softmax(logits, temperature=1.0)
-            logp = torch.log(probs.gather(-1, token_ids.unsqueeze(-1)).squeeze(-1))
-            return logp
-            
-        elif self.backend == constants.BackendLib.AITER.value:
             try:
-                import aiter
-                # return aiter.ops.logp(logits, token_ids)
-                raise NotImplementedError("AITER logp operator integration in progress...")
-            except ImportError:
-                return torch.log_softmax(logits, dim=-1).gather(-1, token_ids.unsqueeze(-1)).squeeze(-1)
+                from flashinfer.sampling import softmax
+                probs = softmax(logits.float(), temperature=1.0)
+                return torch.log(probs.gather(-1, token_ids.unsqueeze(-1)).squeeze(-1))
+            except (ImportError, RuntimeError):
+                pass
 
-        return torch.log_softmax(logits, dim=-1).gather(-1, token_ids.unsqueeze(-1)).squeeze(-1)
+        batch_size = logits.shape[0]
+        chunk_size = 4096  # Adjust based on GPU memory constraints
+        
+        if batch_size <= chunk_size:
+            return torch.log_softmax(logits, dim=-1).gather(-1, token_ids.unsqueeze(-1)).squeeze(-1)
+        
+        logps = []
+        for i in range(0, batch_size, chunk_size):
+            c_logits = logits[i : i + chunk_size]
+            c_token_ids = token_ids[i : i + chunk_size]
+
+            c_logp = torch.log_softmax(c_logits, dim=-1).gather(
+                -1, c_token_ids.unsqueeze(-1)
+            ).squeeze(-1)
+            
+            logps.append(c_logp.cpu())
+            del c_logp
+            
+        return torch.cat(logps, dim=0).to(logits.device)

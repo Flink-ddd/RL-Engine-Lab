@@ -6,7 +6,7 @@ import time
 import argparse
 from tabulate import tabulate
 from rl_engine.utils.logger import logger
-from rl_engine.kernels.sampling import FlashInferSampler
+from rl_engine.kernels.sampling import SamplerBackend
 from rl_engine.kernels.sampling import SamplerBackend as RL_Sampler
 from rl_engine.platforms.device import device_ctx
 

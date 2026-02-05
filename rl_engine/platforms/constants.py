@@ -78,3 +78,20 @@ class ActivationFunction(Enum):
     SILU = "silu"
     TANH = "tanh"
     SIGMOID = "sigmoid"
+
+class Constants:
+    def __init__(self):
+        self.DeviceType = DeviceType
+        self.BackendLib = BackendLib
+        self.PrecisionType = PrecisionType
+        self.SamplingMethod = SamplingMethod
+        self.MemoryFormat = MemoryFormat
+        self.OperatorFusionLevel = OperatorFusionLevel
+        self.KernelOptimizationLevel = KernelOptimizationLevel
+        self.LoggingLevel = LoggingLevel
+        self.ProfilingMode = ProfilingMode
+        self.DistributedStrategy = DistributedStrategy
+        self.CheckpointFormat = CheckpointFormat
+        self.ActivationFunction = ActivationFunction
+
+constants = Constants()
